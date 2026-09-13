@@ -1,0 +1,115 @@
+"use server";
+
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+const SESSION_COOKIE_NAME = "lws_auth_token";
+
+// ---------------------------------------------------------------------------
+// Dummy in-memory "database" for learning purposes.
+// Persisted on globalThis so it survives Next.js dev-server hot reloads.
+// Replace this with real database calls when you're ready.
+// ---------------------------------------------------------------------------
+const INITIAL_USERS = [
+  {
+    id: "user-1",
+    name: "Tanvir Rahman",
+    email: "tanvir123@gmail.com",
+    password: "password123",
+  },
+];
+
+globalThis.mockUsers = globalThis.mockUsers || [...INITIAL_USERS];
+
+export async function getCurrentUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  console.log("i am token: ", token);
+  try {
+    if (!token) {
+      throw new Error("Token not found");
+    }
+    const user = globalThis.mockUsers.find((u) => u.id === token);
+    return user || null;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
+export async function loginUser(prevState, formData) {
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  if (!email || !password) {
+    return { success: false, error: "Email and password are required." };
+  }
+
+  try {
+    const user = globalThis.mockUsers.find(
+      (u) => u.email === email && u.password === password,
+    );
+    if (!user) {
+      return { success: false, error: "Invalid email or password" };
+    }
+    const cookieStore = await cookies();
+    cookieStore.set({
+      name: SESSION_COOKIE_NAME,
+      value: user.id,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: err.message };
+  }
+
+  redirect("/dashboard");
+}
+
+export async function registerUser(prevState, formData) {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  if (!name || !email || !password) {
+    return { success: false, error: "All fields are required." };
+  }
+
+  try {
+    const existing = globalThis.mockUsers.find((u) => u.email === email);
+    if (existing) {
+      return { success: false, error: "Registration failed." };
+    }
+
+    const user = {
+      id: `user-${globalThis.mockUsers.length + 1}`,
+      name,
+      email,
+      password,
+    };
+    globalThis.mockUsers.push(user);
+
+    const cookieStore = await cookies();
+    cookieStore.set({
+      name: SESSION_COOKIE_NAME,
+      value: user.id,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: "Registration failed." };
+  }
+  redirect("/dashboard");
+}
+
+export async function logoutUser() {
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE_NAME);
+  redirect("/");
+}

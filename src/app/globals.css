@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FDFBF7;
+  --foreground: #000000;
+}
+
+@theme {
+  --font-sans: var(--font-space-grotesk), sans-serif;
+  
+  --color-neo-yellow: #FFDE47;
+  --color-neo-green: #3BF674;
+  --color-neo-pink: #FF6B8B;
+  --color-neo-cyan: #00F0FF;
+  --color-neo-orange: #FF6B00;
+  --color-neo-bg: #FDFBF7;
+  --color-neo-card: #FFFFFF;
+  
+  --shadow-neo-sm: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-neo-md: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-neo-lg: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  overflow-x: hidden;
+}
+
+/* Custom Neo-Brutalist utility focus classes */
+.neo-focus:focus-visible {
+  outline: 4px solid #000000;
+  outline-offset: 2px;
+}
