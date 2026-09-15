@@ -1,5 +1,6 @@
 "use server";
 
+import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -29,7 +30,9 @@ export async function getCurrentUser() {
     if (!token) {
       throw new Error("Token not found");
     }
-    const user = globalThis.mockUsers.find((u) => u.id === token);
+    const user = await prisma.user.findFirst({
+      where: { id: token },
+    });
     return user || null;
   } catch (err) {
     console.log(err);
@@ -46,16 +49,19 @@ export async function loginUser(prevState, formData) {
   }
 
   try {
-    const user = globalThis.mockUsers.find(
-      (u) => u.email === email && u.password === password,
-    );
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+        password,
+      },
+    });
     if (!user) {
       return { success: false, error: "Invalid email or password" };
     }
     const cookieStore = await cookies();
     cookieStore.set({
       name: SESSION_COOKIE_NAME,
-      value: user.id,
+      value: user.id, //
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
@@ -79,23 +85,17 @@ export async function registerUser(prevState, formData) {
   }
 
   try {
-    const existing = globalThis.mockUsers.find((u) => u.email === email);
-    if (existing) {
-      return { success: false, error: "Registration failed." };
-    }
-
-    const user = {
-      id: `user-${globalThis.mockUsers.length + 1}`,
-      name,
-      email,
-      password,
-    };
-    globalThis.mockUsers.push(user);
-
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password,
+      },
+    });
     const cookieStore = await cookies();
     cookieStore.set({
       name: SESSION_COOKIE_NAME,
-      value: user.id,
+      value: user.id, //
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",

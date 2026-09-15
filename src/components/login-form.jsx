@@ -24,7 +24,7 @@ export function LoginForm() {
         type="email"
         placeholder="e.g. abc@gmail.com"
         required
-        defaultValue="tanvir123@gmail.com"
+        defaultValue="tanvir@gmail.com"
       />
 
       <Input
@@ -33,7 +33,7 @@ export function LoginForm() {
         type="password"
         placeholder="••••••••"
         required
-        defaultValue="password123"
+        defaultValue="5678"
       />
 
       <Button
