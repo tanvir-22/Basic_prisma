@@ -28,8 +28,9 @@ export default async function DashboardPage(props) {
 
   const searchParams = await props.searchParams;
   const search = searchParams.search;
+
   const tag = searchParams.tag;
-  console.log(searchParams);
+  console.log("i am the searchParams:",searchParams,tag);
   // Fetch Tags and Notes from Server Actions
   const tags = await getTags();
   const notes = await getNotes({ search, tag });

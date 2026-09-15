@@ -23,7 +23,7 @@ export function NoteForm({ initialNote, allTags }) {
   const handleTagToggle = (tagId) => {
     console.log(tagId);
     setSelectedTagIds((prev) =>
-      {console.log(prev);
+      {console.log("i am prev tag:",prev);
       return prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]}
     );
   };

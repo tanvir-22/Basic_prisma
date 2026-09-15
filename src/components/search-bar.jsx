@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Loader2 } from 'lucide-react';
 
 export function SearchBar({ defaultValue = '' }) {
+  // console.log("i am defaultValue:",defaultValue);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -29,6 +30,7 @@ export function SearchBar({ defaultValue = '' }) {
       }
       startTransition(() => {
         router.push(`${pathname}?${params.toString()}`);
+       
       });
     }, 300);
 
